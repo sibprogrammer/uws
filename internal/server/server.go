@@ -18,6 +18,10 @@ func Run() error {
 		return runPHP(ip, port)
 	}
 
+	if fileExists("Gemfile") && fileExists("config.ru") {
+		return runRuby(ip, port)
+	}
+
 	return runStatic(ip, port)
 }
 
@@ -38,6 +42,12 @@ func runCommand(name string, arg ...string) error {
 	return command.Run()
 }
 
+func runStatic(ip string, port string) error {
+	address := fmt.Sprintf("http://%s:%s", ip, port)
+	fmt.Println("Static server started:", address)
+	return http.ListenAndServe(":"+port, http.FileServer(http.Dir(".")))
+}
+
 func runPHP(ip string, port string) error {
 	address := fmt.Sprintf("%s:%s", ip, port)
 	args := []string{"-S", address}
@@ -51,8 +61,6 @@ func runPHP(ip string, port string) error {
 	return runCommand("php", args...)
 }
 
-func runStatic(ip string, port string) error {
-	address := fmt.Sprintf("http://%s:%s", ip, port)
-	fmt.Println("Static server started:", address)
-	return http.ListenAndServe(":"+port, http.FileServer(http.Dir(".")))
+func runRuby(ip string, port string) error {
+	return runCommand("bundle", "exec", "rackup", "--host", ip, "--port", port)
 }
