@@ -22,6 +22,10 @@ func Run() error {
 		return runRuby(ip, port)
 	}
 
+	if fileExists("package.json") {
+		return runJS(ip, port)
+	}
+
 	return runStatic(ip, port)
 }
 
@@ -34,8 +38,7 @@ func fileExists(name string) bool {
 	return true
 }
 
-func runCommand(name string, arg ...string) error {
-	command := exec.Command(name, arg...)
+func runCommand(command *exec.Cmd) error {
 	command.Stdin = os.Stdin
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
@@ -58,9 +61,23 @@ func runPHP(ip string, port string) error {
 		args = append(args, "-t", "web")
 	}
 
-	return runCommand("php", args...)
+	return runCommand(exec.Command("php", args...))
 }
 
 func runRuby(ip string, port string) error {
-	return runCommand("bundle", "exec", "rackup", "--host", ip, "--port", port)
+	return runCommand(exec.Command("bundle", "exec", "rackup", "--host", ip, "--port", port))
+}
+
+func runJS(ip string, port string) error {
+	var command *exec.Cmd
+
+	if fileExists("yarn.lock") {
+		command = exec.Command("yarn", "start")
+	} else {
+		command = exec.Command("npm", "start")
+	}
+
+	command.Env = append(os.Environ(), "PORT="+port)
+
+	return runCommand(command)
 }
