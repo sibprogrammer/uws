@@ -4,6 +4,7 @@ Universal Web Server for development purposes. It is similar to `python -m Simpl
 
 # Features
 
+* `uws` to serve a web app located in the current directory
 * Detect PHP stack and launch `php -S` command
 * Detect Rack-based Ruby app and launch `rackup` command via `bundler`
 * Detect NodeJS-based app and launch `yarn` or `npm` command
