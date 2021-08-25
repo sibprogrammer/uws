@@ -7,13 +7,7 @@ import (
 	"os/exec"
 )
 
-const defaultIp = "127.0.0.1"
-const defaultPort = "8080"
-
-func Run() error {
-	ip := defaultIp
-	port := defaultPort
-
+func Run(port string, ip string) error {
 	if fileExists("composer.json") {
 		return runPHP(ip, port)
 	}
