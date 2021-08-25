@@ -6,10 +6,12 @@ import (
 	"github.com/sibprogrammer/uws/internal/server"
 	"github.com/spf13/cobra"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"path"
 	"path/filepath"
+	"strconv"
 	"syscall"
 )
 
@@ -40,9 +42,12 @@ var rootCmd = &cobra.Command{
 			defer context.Release()
 		}
 
+		port, _ := cmd.Flags().GetInt("port")
+		ip, _ := cmd.Flags().GetIP("binding")
+
 		var result error
 		go func() {
-			result = server.Run()
+			result = server.Run(strconv.Itoa(port), ip.String())
 		}()
 		<-done
 
@@ -56,6 +61,8 @@ func Execute() {
 	)
 
 	rootCmd.PersistentFlags().BoolP("daemon", "d", false, "Run in the background mode")
+	rootCmd.PersistentFlags().IntP("port", "p", 8080, "Run the server on the specified port")
+	rootCmd.PersistentFlags().IPP("binding", "b", net.IPv4(127,0,0,1), "Bind the server to the specified IP")
 
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
