@@ -19,10 +19,7 @@ var rootCmd = &cobra.Command{
 	Use:   "uws",
 	Short: "Universal Web Server for development purposes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		daemonMode, err := cmd.Flags().GetBool("daemon")
-		if err != nil {
-			return err
-		}
+		daemonMode, _ := cmd.Flags().GetBool("daemon")
 
 		done := make(chan os.Signal, 1)
 		signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
@@ -45,13 +42,13 @@ var rootCmd = &cobra.Command{
 		port, _ := cmd.Flags().GetInt("port")
 		ip, _ := cmd.Flags().GetIP("binding")
 
-		var result error
+		var err error
 		go func() {
-			result = server.Run(strconv.Itoa(port), ip.String())
+			err = server.Run(strconv.Itoa(port), ip.String())
 		}()
 		<-done
 
-		return result
+		return err
 	},
 }
 
