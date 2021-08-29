@@ -6,6 +6,7 @@ import (
 	"github.com/sevlyar/go-daemon"
 	"github.com/sibprogrammer/uws/internal/server"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -46,10 +47,12 @@ var rootCmd = &cobra.Command{
 
 		var err error
 		go func() {
+			createPidFile()
 			err = server.Run(strconv.Itoa(port), ip.String())
 			if err != nil {
 				fmt.Printf("Failed to launch the server: %v\n", err)
 			}
+
 		}()
 
 		go func() {
@@ -62,6 +65,7 @@ var rootCmd = &cobra.Command{
 		}()
 
 		<-done
+		releasePidFile()
 
 		return err
 	},
@@ -70,6 +74,7 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.AddCommand(
 		versionCmd,
+		listCmd,
 	)
 
 	rootCmd.PersistentFlags().BoolP("daemon", "d", false, "Run in the background mode")
@@ -90,5 +95,27 @@ func getDaemonContext(binaryName string, workDir string) *daemon.Context {
 		LogFilePerm: 0640,
 		WorkDir:     workDir,
 		Umask:       027,
+	}
+}
+
+func getPidFileName() string {
+	userHomeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatalf("Unable to obatin user home directory: %v\n", err)
+	}
+	return fmt.Sprintf("%s/.uws.%d", userHomeDir, os.Getpid())
+}
+
+func createPidFile() {
+	err := ioutil.WriteFile(getPidFileName(), []byte(""), 0664)
+	if err != nil {
+		fmt.Printf("Unable to create PID file: %v\n", err)
+	}
+}
+
+func releasePidFile() {
+	err := os.Remove(getPidFileName())
+	if err != nil {
+		fmt.Printf("Unable to delete PID file: %v\n", err)
 	}
 }
