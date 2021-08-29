@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/pkg/browser"
 	"github.com/sevlyar/go-daemon"
 	"github.com/sibprogrammer/uws/internal/server"
 	"github.com/spf13/cobra"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"syscall"
+	"time"
 )
 
 var rootCmd = &cobra.Command{
@@ -45,7 +47,20 @@ var rootCmd = &cobra.Command{
 		var err error
 		go func() {
 			err = server.Run(strconv.Itoa(port), ip.String())
+			if err != nil {
+				fmt.Printf("Failed to launch the server: %v\n", err)
+			}
 		}()
+
+		go func() {
+			time.Sleep(time.Second)
+			url := fmt.Sprintf("http://%s:%s", ip.String(), strconv.Itoa(port))
+			err = browser.OpenURL(url)
+			if err != nil {
+				fmt.Printf("Unable to open the browser: %v\n", err)
+			}
+		}()
+
 		<-done
 
 		return err
