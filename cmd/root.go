@@ -7,7 +7,6 @@ import (
 	"github.com/sibprogrammer/uws/internal/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -112,7 +111,7 @@ func getPidFileName() string {
 }
 
 func createPidFile() {
-	err := ioutil.WriteFile(getPidFileName(), []byte(""), 0664)
+	err := os.WriteFile(getPidFileName(), []byte(""), 0664)
 	if err != nil {
 		fmt.Printf("Unable to create PID file: %v\n", err)
 	}
