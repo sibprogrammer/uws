@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/signal"
 	"path"
-	"path/filepath"
 	"strconv"
 	"syscall"
 	"time"
@@ -21,13 +20,17 @@ var rootCmd = &cobra.Command{
 	Use:   "uws",
 	Short: "Universal Web Server for development purposes",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		workDir, _ := cmd.Flags().GetString("docroot")
+		if err := os.Chdir(workDir); err != nil {
+			log.Fatal("Unable to change the directory: ", err)
+		}
+
 		daemonMode, _ := cmd.Flags().GetBool("daemon")
 
 		done := make(chan os.Signal, 1)
 		signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
 		if daemonMode {
-			workDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 			context := getDaemonContext("uws", workDir)
 
 			d, err := context.Reborn()
@@ -84,6 +87,8 @@ func Execute() {
 		"Run the server on the specified port")
 	rootCmd.PersistentFlags().StringP("binding", "b", viper.GetString("binding"),
 		"Bind the server to the specified IP")
+	rootCmd.PersistentFlags().StringP("docroot", "t", viper.GetString("docroot"),
+		"Specify the document root")
 
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
@@ -132,6 +137,7 @@ func initViper() {
 
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("binding", "127.0.0.1")
+	viper.SetDefault("docroot", ".")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
