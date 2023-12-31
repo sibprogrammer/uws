@@ -41,8 +41,9 @@ func runCommand(command *exec.Cmd) error {
 
 func runStatic(ip string, port string) error {
 	address := fmt.Sprintf("http://%s:%s", ip, port)
-	fmt.Println("Static server started:", address)
-	return http.ListenAndServe(":"+port, http.FileServer(http.Dir(".")))
+	workDir, _ := os.Getwd()
+	fmt.Printf("Static server for %s started: %s\n", workDir, address)
+	return http.ListenAndServe(":"+port, http.FileServer(http.Dir(workDir)))
 }
 
 func runPHP(ip string, port string) error {
