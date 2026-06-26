@@ -43,7 +43,16 @@ func runStatic(ip string, port string) error {
 	address := fmt.Sprintf("http://%s:%s", ip, port)
 	workDir, _ := os.Getwd()
 	fmt.Printf("Static server for %s started: %s\n", workDir, address)
-	return http.ListenAndServe(":"+port, http.FileServer(http.Dir(workDir)))
+	return http.ListenAndServe(":"+port, noCache(http.FileServer(http.Dir(workDir))))
+}
+
+func noCache(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func runPHP(ip string, port string) error {
