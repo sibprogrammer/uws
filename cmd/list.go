@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/spf13/cobra"
 )
 
 var listCmd = &cobra.Command{
@@ -26,7 +27,7 @@ func getServers() []string {
 
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatalf("Unable to obatin user home directory: %v\n", err)
+		log.Fatalf("Unable to obtain user home directory: %v\n", err)
 	}
 
 	matches, err := filepath.Glob(fmt.Sprintf("%s/.uws.*", userHomeDir))
