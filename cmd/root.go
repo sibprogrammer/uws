@@ -2,18 +2,20 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/pkg/browser"
-	"github.com/sevlyar/go-daemon"
-	"github.com/sibprogrammer/uws/internal/server"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"path"
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/pkg/browser"
+	"github.com/sevlyar/go-daemon"
+	"github.com/sibprogrammer/uws/internal/server"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var rootCmd = &cobra.Command{
@@ -47,7 +49,10 @@ var rootCmd = &cobra.Command{
 		port, _ := cmd.Flags().GetInt("port")
 		ip, _ := cmd.Flags().GetString("binding")
 
-		var err error
+		port, err := findAvailablePort(ip, port)
+		if err != nil {
+			log.Fatal("Unable to find an available port: ", err)
+		}
 		go func() {
 			createPidFile()
 			err = server.Run(strconv.Itoa(port), ip)
@@ -94,6 +99,26 @@ func Execute() {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func findAvailablePort(ip string, port int) (int, error) {
+	for i := 0; i < 5; i++ {
+		if isPortFree(ip, port+i) {
+			return port + i, nil
+		}
+	}
+
+	return 0, fmt.Errorf("no available port found")
+}
+
+func isPortFree(ip string, port int) bool {
+	address := net.JoinHostPort(ip, fmt.Sprintf("%d", port))
+	conn, err := net.DialTimeout("tcp", address, 200*time.Millisecond)
+	if err != nil {
+		return true
+	}
+	defer conn.Close()
+	return false
 }
 
 func getDaemonContext(binaryName string, workDir string) *daemon.Context {
