@@ -1,6 +1,6 @@
 module github.com/sibprogrammer/uws
 
-go 1.23.0
+go 1.26
 
 require (
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
