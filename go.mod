@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
 	github.com/sevlyar/go-daemon v0.1.6
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 )
 
