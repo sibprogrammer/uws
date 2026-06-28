@@ -1,4 +1,8 @@
 # uws
+
+[![build](https://github.com/sibprogrammer/uws/workflows/build/badge.svg)](https://github.com/sibprogrammer/uws/actions)
+[![Codecov](https://codecov.io/gh/sibprogrammer/uws/branch/master/graph/badge.svg?token=FLOF7SBTSC)](https://codecov.io/gh/sibprogrammer/uws)
+
 Universal Web Server for development purposes. It is similar to `python -m SimpleHTTPServer` or
 `php -S 127.0.0.0:8080` commands but requires less typing and tries to detect the stack to serve it accordingly.
 
