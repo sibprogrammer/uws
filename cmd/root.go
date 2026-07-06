@@ -84,6 +84,7 @@ func Execute() {
 	rootCmd.AddCommand(
 		versionCmd,
 		listCmd,
+		killallCmd,
 	)
 
 	rootCmd.PersistentFlags().BoolP("daemon", "d", false,
