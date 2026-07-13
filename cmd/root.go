@@ -18,6 +18,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Version information
+var Version string
+
 var rootCmd = &cobra.Command{
 	Use:   "uws",
 	Short: "Universal Web Server for development purposes",
@@ -82,11 +85,13 @@ func Execute() {
 	initViper()
 
 	rootCmd.AddCommand(
-		versionCmd,
 		listCmd,
 		killallCmd,
 	)
 
+	rootCmd.Version = Version
+
+	rootCmd.Flags().BoolP("version", "v", false, "Print version information")
 	rootCmd.PersistentFlags().BoolP("daemon", "d", false,
 		"Run in the background mode")
 	rootCmd.PersistentFlags().IntP("port", "p", viper.GetInt("port"),
