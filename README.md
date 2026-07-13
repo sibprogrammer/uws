@@ -16,6 +16,12 @@ Universal Web Server for development purposes. It is similar to `python -m Simpl
 
 # Installation
 
+Installation using Homebrew:
+
+```
+brew install sibprogrammer/uws/uws
+```
+
 If you have Go toolchain installed, you can use the following command to install `uws`:
 ```
 go install github.com/sibprogrammer/uws@latest
