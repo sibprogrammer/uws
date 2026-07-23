@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
-	github.com/sevlyar/go-daemon v0.1.6
+	github.com/sevlyar/go-daemon v0.1.7
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 )
